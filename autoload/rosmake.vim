@@ -5,7 +5,7 @@ let s:rosmake_errorformat = ','
       \ . '%I[ rosmake ] %m output to directory %.%#,'
       \ . '%Z[ rosmake ] %f %.%#,'
 
-fun! myrosmake#make(type,filename) abort
+fun! rosmake#make(type,filename) abort
   if !executable(a:type)
     echohl WarningMsg
     echomsg "Command '".a:type."' is not executable. Please source setup.bash/sh/zsh first."
@@ -14,23 +14,23 @@ fun! myrosmake#make(type,filename) abort
   endif
 
   try
-    let l:package_dir = myrosmake#find_project_dir(a:filename)
+    let l:package_dir = rosmake#find_project_dir(a:filename)
   catch
     echoerr v:exception
     return
   endtry
 
   try
-    let l:command = myrosmake#get_make_command(a:type)
+    let l:command = rosmake#get_make_command(a:type)
   catch
     echoerr v:exception
     return
   endtry
 
-  call myrosmake#run_command_in_the_dir(l:package_dir,[l:command])
+  call rosmake#run_command_in_the_dir(l:package_dir,[l:command])
 endf
 
-fun! myrosmake#builtin_make(type) abort
+fun! rosmake#builtin_make(type) abort
   let l:saved_makeprg = &makeprg
   let l:saved_errorformat = &errorformat
 
@@ -53,7 +53,7 @@ fun! myrosmake#builtin_make(type) abort
   let &errorformat = l:saved_errorformat
 endf
 
-fun! myrosmake#get_make_command(type) abort
+fun! rosmake#get_make_command(type) abort
   if !(a:type ==# 'rosmake' || a:type ==# 'catkin_make')
     echohl WarningMsg
     echom "This plugin has no config for " . a:type
@@ -88,13 +88,13 @@ fun! myrosmake#get_make_command(type) abort
     call extend(g:quickrun_config, l:config)
     let l:command = ':QuickRun ' . a:type
   else
-    let l:command = ':call myrosmake#builtin_make(''' . a:type . ''')'
+    let l:command = ':call rosmake#builtin_make(''' . a:type . ''')'
   endif
 
   return l:command
 endf
 
-fun! myrosmake#find_project_dir(searchname_arg) abort
+fun! rosmake#find_project_dir(searchname_arg) abort
   if type(a:searchname_arg) == 1 " stringのとき
     let l:arg_is_string = 1
     let l:searchname = a:searchname_arg
@@ -103,7 +103,7 @@ fun! myrosmake#find_project_dir(searchname_arg) abort
     let l:index = 0
     let l:searchname = a:searchname_arg[l:index]
   else
-    throw 'Argument is not appropriate to myrosmake#find_project_dir()'
+    throw 'Argument is not appropriate to rosmake#find_project_dir()'
     return
   endif
 
@@ -146,7 +146,7 @@ fun! myrosmake#find_project_dir(searchname_arg) abort
   return l:destdir
 endf
 
-fun! myrosmake#run_command_in_the_dir(destination,commandlist) abort
+fun! rosmake#run_command_in_the_dir(destination,commandlist) abort
   let l:previous_cwd = getcwd()
   exe 'cd ' . a:destination
   for command in a:commandlist
